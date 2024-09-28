@@ -35,7 +35,7 @@ uintptr_t MmGetSystemRoutineAddressAddr;
 #define LOG(str, ...)		   DbgPrint(str, __VA_ARGS__)
 #define CALL(name, args, ...)  call(WIDETEXT(name), args, __VA_ARGS__)
 
-/* Function that calls km functions */
+/* Function that call km functions */
 uintptr_t __fastcall call(const LPCWSTR name, const int args_count, ...);
 
 //       |\      _,,,---,,_
