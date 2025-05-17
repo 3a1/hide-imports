@@ -32,7 +32,12 @@ uintptr_t MmGetSystemRoutineAddressAddr;
 
 #define WIDETEXT(x) L##x
 
+#ifdef DEBUG
 #define LOG(str, ...)		   DbgPrint(str, __VA_ARGS__)
+#else
+#define LOG
+#endif
+
 #define CALL(name, args, ...)  call(WIDETEXT(name), args, __VA_ARGS__)
 
 /* Function that call km functions */
