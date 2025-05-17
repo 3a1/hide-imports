@@ -2,16 +2,16 @@
 
 typedef struct _KLDR_DATA_TABLE_ENTRY
 {
-	struct _LIST_ENTRY InLoadOrderLinks;                                    //0x0
-	VOID* ExceptionTable;                                                   //0x10
-	ULONG ExceptionTableSize;                                               //0x18
-	VOID* GpValue;                                                          //0x20
-	struct _NON_PAGED_DEBUG_INFO* NonPagedDebugInfo;                        //0x28
-	VOID* DllBase;                                                          //0x30
-	VOID* EntryPoint;                                                       //0x38
-	ULONG SizeOfImage;                                                      //0x40
-	struct _UNICODE_STRING FullDllName;                                     //0x48
-	struct _UNICODE_STRING BaseDllName;                                     //0x58
+	struct _LIST_ENTRY InLoadOrderLinks;                      // 0x0
+	VOID* ExceptionTable;                                     // 0x10
+	ULONG ExceptionTableSize;                                 // 0x18
+	VOID* GpValue;                                            // 0x20
+	struct _NON_PAGED_DEBUG_INFO* NonPagedDebugInfo;          // 0x28
+	VOID* DllBase;                                            // 0x30
+	VOID* EntryPoint;                                         // 0x38
+	ULONG SizeOfImage;                                        // 0x40
+	struct _UNICODE_STRING FullDllName;                       // 0x48
+	struct _UNICODE_STRING BaseDllName;                       // 0x58
 } _KLDR_DATA_TABLE_ENTRY, * PKLDR_DATA_TABLE_ENTRY;
 
 typedef struct _IMPORT 
@@ -39,26 +39,19 @@ inline static uintptr_t get_kernel_export(const PUNICODE_STRING name)
 #if MANUAL_MODE
 	if (!MmGetSystemRoutineAddressAddr) 
 	{
-#if DEBUG
 		LOG("Can't find the MmGetSystemRoutineAddressAddr!\n");
-#endif
 		return 0;
 	}
-#if DEBUG
+	
 	LOG("MmGetSystemRoutineAddress: %p\n", (PVOID)MmGetSystemRoutineAddressAddr);
-#endif
 	return (uintptr_t)((PVOID(*)(PUNICODE_STRING))MmGetSystemRoutineAddressAddr)(name);
 #else
 	if (!MmGetSystemRoutineAddress)
 	{
-#if DEBUG
 		LOG("Can't find the MmGetSystemRoutineAddress!\n");
-#endif
 		return 0;
 	}
-#if DEBUG
 	LOG("MmGetSystemRoutineAddress: %p\n", (PVOID)MmGetSystemRoutineAddress);
-#endif
 	return (uintptr_t)MmGetSystemRoutineAddress(name);
 #endif
 }
@@ -81,22 +74,16 @@ static bool get_kernel_base()
 	PsLoadedModuleList = (PLIST_ENTRY)get_kernel_export(&funcName);
 	if (!PsLoadedModuleList)
 	{
-#if DEBUG
 		LOG("Can't find the PsLoadedModuleList!\n");
-#endif
 		return false;
 	}
-#if DEBUG
 	LOG("PsLoadedModuleList: %p\n", PsLoadedModuleList);
-#endif
 
 	/* First entry is always ntoskrnl.exe :) */
 	PKLDR_DATA_TABLE_ENTRY ldr_entry = (PKLDR_DATA_TABLE_ENTRY)PsLoadedModuleList->Flink;
 
-#if DEBUG
 	LOG("ldr_entry->BaseDllName: %wZ\n", &ldr_entry->BaseDllName);
 	LOG("ldr_entry->DllBase: %p\n", &ldr_entry->DllBase);
-#endif
 
 	kernel_base = (uintptr_t)&ldr_entry->DllBase;
 
@@ -115,9 +102,7 @@ static uintptr_t get_function_address(const LPCWSTR name)
 	{
 		if (imports_list[i].name == name)
 		{
-#if DEBUG
 			LOG("Function: %ls Address: %p [previously imported]\n", name, (PVOID)imports_list[i].address);
-#endif
 			return imports_list[i].address;
 		}
 	}
@@ -141,9 +126,7 @@ static uintptr_t get_function_address(const LPCWSTR name)
 			imports_list[i] = import;
 		}
 	}
-#if DEBUG
 	LOG("Function: %ls Address: %p [imported successfully]\n", name, (PVOID)funcAddress);
-#endif
 	return funcAddress;
 }
 
